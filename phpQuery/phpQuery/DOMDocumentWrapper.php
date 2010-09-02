@@ -42,12 +42,6 @@ class DOMDocumentWrapper
 
 	public $dataNodes = array();
 
-	//public $events = array();
-
-	public $eventsNodes = array();
-
-	public $eventsGlobal = array();
-
 	
 	/**
 	 * @TODO iframes support http://code.google.com/p/phpquery/issues/detail?id=28
@@ -512,6 +506,7 @@ class DOMDocumentWrapper
 		return $markup;
 	}
 
+	
 	protected function charsetAppendToHTML($html, $charset, $xhtml = false)
 	{
 		// remove existing meta[type=content-type]
