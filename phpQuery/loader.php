@@ -42,13 +42,6 @@ function pq ($arg1, $context = null)
 	return callback('\\phpQuery\\phpQuery::pq')->invokeArgs($args);
 }
 
-// add plugins dir and Zend framework to include path
-set_include_path(
-	get_include_path()
-		.PATH_SEPARATOR.PHPQUERY_DIR.'/phpQuery/'
-		.PATH_SEPARATOR.PHPQUERY_DIR.'/phpQuery/plugins/'
-);
-
 // why ? no __call nor __get for statics in php...
 // XXX __callStatic will be available in PHP 5.3
 phpQuery::$plugins = new Plugins();
