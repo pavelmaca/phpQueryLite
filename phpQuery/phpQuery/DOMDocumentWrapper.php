@@ -389,7 +389,7 @@ class DOMDocumentWrapper
 			return $return;
 
 		} else {
-			throw new Exception("Error loading XML markup");
+			throw new \Exception("Error loading XML markup");
 		}
 
 	}
@@ -516,7 +516,7 @@ class DOMDocumentWrapper
 			.($xhtml ? '/' : '')
 			.'>';
 		if (strpos($html, '<head') === false) {
-			if (strpos($hltml, '<html') === false) {
+			if (strpos($html, '<html') === false) {
 				return $meta.$html;
 
 			} else {
@@ -617,7 +617,7 @@ class DOMDocumentWrapper
 			// string markup
 			$fake = $this->documentFragmentCreate($source, $sourceCharset);
 			if ($fake === false) {
-				throw new Exception("Error loading documentFragment markup");
+				throw new \Exception("Error loading documentFragment markup");
 			} else {
 				return $this->import($fake->root->childNodes);
 			}
