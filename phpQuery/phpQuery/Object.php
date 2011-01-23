@@ -1178,18 +1178,17 @@ class Object implements \Iterator, \Countable, \ArrayAccess
 
 			case 'parent':
 				$this->elements = $this->map(
-					create_function('$node', '
+					function($node){
 						return $node instanceof \DOMElement && $node->childNodes->length
-							? $node : null;')
-				)->elements;
+							? $node : null;
+					})->elements;
 				break;
 
 			case 'empty':
 				$this->elements = $this->map(
-					create_function('$node', '
-						return $node instanceof \DOMElement && $node->childNodes->length
-							? null : $node;')
-				)->elements;
+					function($node) {
+						return $node instanceof \DOMElement && $node->childNodes->length ? null : $node;
+					})->elements;
 				break;
 
 			case 'disabled':
@@ -1203,23 +1202,24 @@ class Object implements \Iterator, \Countable, \ArrayAccess
 
 			case 'enabled':
 				$this->elements = $this->map(
-					create_function('$node', '
-						return pq($node)->not(":disabled") ? $node : null;')
-				)->elements;
+					function($node){
+						return phpQuery::pq($node)->not(":disabled") ? $node : null;
+					})->elements;
 				break;
 
 			case 'header':
 				$this->elements = $this->map(
-					create_function('$node',
-						'$isHeader = isset($node->tagName) && in_array($node->tagName, array(
+					function($node){
+						$isHeader = isset($node->tagName) && in_array($node->tagName, array(
 							"h1", "h2", "h3", "h4", "h5", "h6", "h7"
 						));
 						return $isHeader
 							? $node
-							: null;')
-				)->elements;
+							: null;
+					})->elements;
 //				$this->elements = $this->map(
-//					create_function('$node', '$node = pq($node);
+//					function($node) {
+//						$node = phpQuery::pq($node);
 //						return $node->is("h1")
 //							|| $node->is("h2")
 //							|| $node->is("h3")
@@ -1228,26 +1228,26 @@ class Object implements \Iterator, \Countable, \ArrayAccess
 //							|| $node->is("h6")
 //							|| $node->is("h7")
 //							? $node
-//							: null;')
-//				)->elements;
+//							: null;
+//					})->elements;
 				break;
 
 			case 'only-child':
 				$this->elements = $this->map(
-					create_function('$node',
-						'return pq($node)->siblings()->size() == 0 ? $node : null;')
-				)->elements;
+					function($node){
+						return phpQuery::pq($node)->siblings()->size() == 0 ? $node : null;
+					})->elements;
 				break;
 
 			case 'first-child':
 				$this->elements = $this->map(
-					create_function('$node', 'return pq($node)->prevAll()->size() == 0 ? $node : null;')
+					function($node){ return phpQuery::pq($node)->prevAll()->size() == 0 ? $node : null; }
 				)->elements;
 				break;
 
 			case 'last-child':
 				$this->elements = $this->map(
-					create_function('$node', 'return pq($node)->nextAll()->size() == 0 ? $node : null;')
+					function($node){ return phpQuery::pq($node)->nextAll()->size() == 0 ? $node : null; }
 				)->elements;
 				break;
 
@@ -1262,22 +1262,23 @@ class Object implements \Iterator, \Countable, \ArrayAccess
 				}
 				// :nth-child(index/even/odd/equation)
 				if ($param == 'even' || $param == 'odd') {
-					$mapped = $this->map(
-						create_function('$node, $param',
-							'$index = pq($node)->prevAll()->size()+1;
+					
+					$mapped = $this->map( function($node, $param){
+							$index = phpQuery::pq($node)->prevAll()->size()+1;
 							if ($param == "even" && ($index%2) == 0)
 								return $node;
 							else if ($param == "odd" && $index%2 == 1)
 								return $node;
 							else
-								return null;'),
+								return null;
+						},
 						new \CallbackParam(), $param
 					);
 				} elseif (mb_strlen($param) > 1 && $param{1} == 'n') {
 					// an+b
 					$mapped = $this->map(
-						create_function('$node, $param',
-							'$prevs = pq($node)->prevAll()->size();
+						function($node, $param){
+							$prevs = phpQuery::pq($node)->prevAll()->size();
 							$index = 1+$prevs;
 							$b = mb_strlen($param) > 3
 								? $param{3}
@@ -1310,20 +1311,21 @@ class Object implements \Iterator, \Countable, \ArrayAccess
 //								return ($index-$b)%$a == 0
 //									? $node
 //									: null;
-							'),
+						},
 						new \CallbackParam(), $param
 					);
 				} else {
 					// index
 					$mapped = $this->map(
-						create_function('$node, $index',
-							'$prevs = pq($node)->prevAll()->size();
+						function($node, $index){
+							$prevs = phpQuery::pq($node)->prevAll()->size();
 							if ($prevs && $prevs == $index-1)
 								return $node;
 							else if (! $prevs && $index == 1)
 								return $node;
 							else
-								return null;'),
+								return null;
+						},
 						new \CallbackParam(), $param
 					);
 				}
@@ -1624,14 +1626,14 @@ class Object implements \Iterator, \Countable, \ArrayAccess
 	 */
 	public function wrapAllOld($wrapper)
 	{
-		$wrapper = pq($wrapper)->_clone();
+		$wrapper = phpQuery::pq($wrapper)->_clone();
 		if (! $wrapper->length() || ! $this->length() )
 			return $this;
 		$wrapper->insertBefore($this->elements[0]);
 		$deepest = $wrapper->elements[0];
 		while($deepest->firstChild && $deepest->firstChild instanceof \DOMElement)
 			$deepest = $deepest->firstChild;
-		pq($deepest)->append($this);
+		phpQuery::pq($deepest)->append($this);
 		return $this;
 	}
 
@@ -1752,10 +1754,10 @@ class Object implements \Iterator, \Countable, \ArrayAccess
 	 */
 	public function switchWith($markup)
 	{
-		$markup = pq($markup, $this->getDocumentID());
+		$markup = phpQuery::pq($markup, $this->getDocumentID());
 		$content = null;
 		foreach($this->stack(1) as $node) {
-			pq($node)
+			phpQuery::pq($node)
 				->contents()->toReference($content)->end()
 				->replaceWith($markup->clone()->append($content));
 		}
@@ -1952,7 +1954,7 @@ class Object implements \Iterator, \Countable, \ArrayAccess
 			foreach($this->stack(1) as $alreadyAdded => $node) {
 				// for now, limit events for textarea
 				if (($this->isXHTML() || $this->isHTML()) && $node->tagName == 'textarea') {
-					$oldHtml = pq($node, $this->getDocumentID())->markup();
+					$oldHtml = phpQuery::pq($node, $this->getDocumentID())->markup();
 				}
 
 				foreach($nodes as $newNode) {
@@ -2895,7 +2897,7 @@ class Object implements \Iterator, \Countable, \ArrayAccess
 		} else {
 			$_val = null;
 			foreach($this->stack(1) as $node) {
-				$node = pq($node, $this->getDocumentID());
+				$node = phpQuery::pq($node, $this->getDocumentID());
 				if (is_array($val) && in_array($node->attr('type'), array('checkbox', 'radio'))) {
 					$isChecked = in_array($node->attr('value'), $val) || in_array($node->attr('name'), $val);
 					if ($isChecked) {
@@ -2918,7 +2920,7 @@ class Object implements \Iterator, \Countable, \ArrayAccess
 					}
 
 					foreach($node['option']->stack(1) as $option) {
-						$option = pq($option, $this->getDocumentID());
+						$option = phpQuery::pq($option, $this->getDocumentID());
 						$selected = false;
 						// XXX: workaround for string comparsion, see issue #96
 						// http://code.google.com/p/phpquery/issues/detail?id=96
