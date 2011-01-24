@@ -3062,7 +3062,7 @@ class Object implements \Iterator, \Countable, \ArrayAccess
 	 * Removes all child nodes from the set of matched elements.
 	 *
 	 * Example:
-	 * pq("p")._empty()
+	 * phpQuery::pq("p")._empty()
 	 *
 	 * HTML:
 	 * <p>Hello, <span>Person</span> <a href="#">and person</a></p>
