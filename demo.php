@@ -33,7 +33,7 @@ $doc['ul > li']
 phpQuery::selectDocument($doc);
 // documents are selected when created or by above method
 // query all unordered lists in last selected document
-$ul = pq('ul')->insertAfter('div');
+$ul = phpQuery::pq('ul')->insertAfter('div');
 
 // ITERATE IT
 // all direct LIs from $ul
@@ -42,16 +42,16 @@ foreach($ul['> li'] as $li) {
 	$tagName = $li->tagName;
 	$childNodes = $li->childNodes;
 	// so you NEED to wrap it within phpQuery, using pq();
-	pq($li)->addClass('my-second-new-class');
+	phpQuery::pq($li)->addClass('my-second-new-class');
 }
 
 // PRINT OUTPUT
 // 1st way
 print phpQuery::getDocument($doc->getDocumentID());
 // 2nd way
-print phpQuery::getDocument(pq('div')->getDocumentID());
+print phpQuery::getDocument(phpQuery::pq('div')->getDocumentID());
 // 3rd way
-print pq('div')->getDocument();
+print phpQuery::pq('div')->getDocument();
 // 4th way
 print $doc->htmlOuter();
 // 5th way

@@ -36,11 +36,14 @@ require_once PHPQUERY_DIR . '/phpQuery/Callback.php';
  * @author Tobiasz Cudnik <tobiasz.cudnik/gmail.com>
  * @package phpQuery
  */
+
+/*
 function pq ($arg1, $context = null)
 {
 	$args = func_get_args();
 	return callback('\\phpQuery\\phpQuery::pq')->invokeArgs($args);
 }
+*/
 
 // why ? no __call nor __get for statics in php...
 // XXX __callStatic will be available in PHP 5.3
